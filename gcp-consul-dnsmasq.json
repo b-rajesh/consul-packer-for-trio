@@ -4,7 +4,7 @@
         "region": "australia-southeast1",
         "zone": "australia-southeast1-a",
         "image_family": "ubuntu-1804-lts",
-        "project_id": "f5-gcs-4299-sales-se-nginx",
+        "project_id": "",
         "consul-packer-module-version": "0.4.0",
         "purpose": "consul-server-v1-8-3",
         "consul_version": "1.8.3"
