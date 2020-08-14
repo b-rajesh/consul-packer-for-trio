@@ -1,0 +1,52 @@
+{
+    "variables": {
+        "machine_type": "n2-standard-2",
+        "region": "australia-southeast1",
+        "zone": "australia-southeast1-a",
+        "image_family": "ubuntu-1804-lts",
+        "project_id": "f5-gcs-4299-sales-se-nginx",
+        "consul-packer-module-version": "0.4.0",
+        "purpose": "consul-server-v1-8-3",
+        "consul_version": "1.8.3"
+    },
+    "builders": [
+    {
+      "name": "consul-server",
+      "type": "googlecompute",
+      "image_name": "{{user `purpose`}}",
+      "machine_type": "{{user `machine_type`}}",
+      "image_family": "consul-ubuntu-1804-lts",
+      "project_id": "{{user `project_id`}}",
+      "source_image_family": "ubuntu-1804-lts",
+      "region": "{{user `region`}}",
+      "disk_size": 50,
+      "zone": "{{user `zone`}}",
+      "ssh_username": "consul-admin",
+      "tags": ["{{user `purpose`}}"]
+    }],
+    "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+          "mkdir -p /tmp/terraform-google-consul",
+          "mkdir -p /tmp/bash-commons"
+        ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo mkdir -p /opt/gruntwork",
+        "git clone --branch v0.0.3 https://github.com/gruntwork-io/bash-commons.git /tmp/bash-commons",
+        "sudo cp -r /tmp/bash-commons/modules/bash-commons/src /opt/gruntwork/bash-commons"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "git clone --branch v{{user `consul-packer-module-version`}}  https://github.com/hashicorp/terraform-google-consul.git  /tmp/terraform-google-consul",
+        "/tmp/terraform-google-consul/modules/install-consul/install-consul --version {{user `consul_version`}}",
+        "/tmp/terraform-google-consul/modules/install-dnsmasq/install-dnsmasq"
+      ],
+      "pause_before": "30s"
+    }]
+  }
